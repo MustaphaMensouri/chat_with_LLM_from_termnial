@@ -1,16 +1,19 @@
 from langchain.chat_models import init_chat_model
+from langchain_core.messages import HumanMessage, AIMessage
 from dotenv import load_dotenv
 
 
 load_dotenv()
+
 model_names = ['gpt-4','claude 3.5 sonnet','gemini 2.0 flash']
 model_name = "gemini-2.0‑flash"
+
 while True:
     print("Which model would you like to talk to?")
     for i in range(len(model_names)):
         print(f"- {i+1}  {model_names[i]}") 
     model_name = input("Enter its name:")
-    if model_name in model_names:
+    if model_name in model_names or model_name in '123':
         break
     else:
         print("please try again")
@@ -29,11 +32,19 @@ print("-"*50)
 print(f"You are currently chatting with {model_name}")
 print("-"*50)
 
+context_windows = []
+
 while True:
     userinput = input("you: ")
     if userinput == "exit":
         break
-
-    result = model.invoke(userinput)
-
+    
+    context_windows.append(HumanMessage(userinput))
+    
+    result = model.invoke(context_windows)
+    
     print(f'{model_name}: {result.content}')
+    
+    context_windows.append(AIMessage(result.content))
+
+    
